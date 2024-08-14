@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
 #include "HepMC3/GenParticle.h"
 
 
@@ -48,11 +49,11 @@ class ChargedParticlesSelector: public ParticleSelector {
         bool selectParticle(const HepMC3::GenParticlePtr particle) const;
 
         /// @brief - adds a new pid to the list
-        void addPID(int pid) {_charged_part_pids.push_back(pid);};
+        void addPID(int pid) {_charged_part_pids.insert(pid);};
 
     private:
         /// stores the absolute value of the PIDs of charged particles
-        std::vector<int> _charged_part_pids = {11, 13, 211, 321, 2212};
+        std::set<int> _charged_part_pids = {11, 13, 211, 321, 2212};
 };
 
 /**
