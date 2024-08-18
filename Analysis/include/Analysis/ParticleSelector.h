@@ -23,21 +23,51 @@ class ParticleSelector {
         /// @brief - Indicates wether the particle must be selected or not.
         /// @param particle - pointer to the HepMC3::GenParticle object.
         /// @return - True if the particle must be selected, false otherwise.
-        virtual bool selectParticle(const HepMC3::GenParticlePtr particle) const = 0;
+        virtual bool selectParticle(HepMC3::ConstGenParticlePtr particle) const = 0;
 };
 
+/**
+ * @class - Select the particle by status code
+ **/
+class StatusCodeSelection: public ParticleSelector {
+    public:
+        StatusCodeSelection(int status_code): _status(status_code) {};
+
+        // selects the particle by the status
+        bool selectParticle(HepMC3::ConstGenParticlePtr particle) const override {
+            return particle->status() == _status;
+        };
+        
+    private:
+        int _status;
+};
 
 /**
  * @class - Class to select only final state particles.
  **/
-class FinalStateSelector: public ParticleSelector { 
+class FinalStateSelector: public StatusCodeSelection { 
     public:
-        bool selectParticle(const HepMC3::GenParticlePtr particle) const {
-            // status 1 represents a final state particle that is not further decayed by the generator
-            return particle->status() == 1;
-        };
+        // final state particles have status code equal 1
+        FinalStateSelector():  StatusCodeSelection(1) {};
 };
 
+/**
+ * @class - Class to select only the initial state particles.
+ **/
+class InitialStateSelector: public StatusCodeSelection {
+    public:
+        // initial state particles have status code equal to 21
+        InitialStateSelector(): StatusCodeSelection(21) {};
+};
+
+/**
+ * @class - Class to select the generated particles from the hard process
+ **/
+class OutgoingParticlesFromHardProcess: public StatusCodeSelection {
+    public:
+        // outgoing particles from the hard process have status code equal to 23
+        OutgoingParticlesFromHardProcess(): StatusCodeSelection(23) {};
+};
 
 /** 
  * @class - Class to select only the charged particles.
@@ -46,7 +76,7 @@ class ChargedParticlesSelector: public ParticleSelector {
     public:
         /// we do not have information about the charge, but since we have the PID
         /// we can only accept particles with PIDs corresponding to charged particles
-        bool selectParticle(const HepMC3::GenParticlePtr particle) const;
+        bool selectParticle(HepMC3::ConstGenParticlePtr particle) const override;
 
         /// @brief - adds a new pid to the list
         void addPID(int pid) {_charged_part_pids.insert(pid);};
@@ -68,7 +98,7 @@ class MultipleParticleSelectors: public ParticleSelector {
         void addSelector(const ParticleSelector* partSelector) {_part_selectors.push_back(partSelector);};
 
         /// selects the particle only if the particle is select by all the selectors
-        bool selectParticle(const HepMC3::GenParticlePtr particle) const;
+        bool selectParticle(HepMC3::ConstGenParticlePtr particle) const override;
 
     private:
         std::vector<const ParticleSelector*> _part_selectors;
