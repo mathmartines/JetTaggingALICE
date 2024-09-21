@@ -8,9 +8,15 @@ LIBS = -lHepMC3 -lfastjet -lfastjettools
 IDIR = include/Analysis
 ODIR = lib
 
+# for analysis with hepmc3 and fastjet
 _DEPS = ParticleSelector JetClustering EventAnalyzer
 DEPS = $(patsubst %, $(IDIR)/%.h, $(_DEPS)) 
 OBJ = $(patsubst %, $(ODIR)/%.o, $(_DEPS))
+
+# for analysis with only hepmc3
+_DEPSHEPMC = ParticleSelector Observable CSVWriter EventAnalyzer 
+DEPSHEPMC = $(patsubst %, $(IDIR)/%.h, $(_DEPSHEPMC)) 
+OBJHEPMC = $(patsubst %, $(ODIR)/%.o, $(_DEPSHEPMC))
 
 # Ensure that the output directory exists
 $(ODIR):
@@ -28,11 +34,19 @@ jet_selection: jet_selection.o $(OBJ)
 jet_selection.o: examples/jet_selection.cpp $(DEPS)
 	$(CXX) -c -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
 
+select_hepmc_particles: select_hepmc_particles.o $(OBJHEPMC)
+	$(CXX) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+select_hepmc_particles.o: examples/select_hepmc_particles.cpp $(DEPSHEPMC)
+	$(CXX) -c -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
+
 # Clean up the compiled files
 clean:
 	rm -rf $(ODIR)/*.o 
 	rm -rf jet_selection
 	rm -rf jet_selection.o
+	rm -rf select_hepmc_particles
+	rm -rf select_hepmc_particles.o
 
 # Phony targets
 .PHONY: clean
