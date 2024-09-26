@@ -14,12 +14,14 @@ using namespace std;
 using namespace HepMC3;
 
 
-int main () {
+void runCSVWriter (string filename) {
+    cout << "analysing file " << filename << endl;
+
     // reading the HepMC3 file
-    string filename = "/sampa/archive/caducka/jetsml/bbbar_prod_20_30.hepmc";
+    string hepmc3_filename = "/sampa/archive/caducka/jetsml/" + filename + ".hepmc";
     // my test
     // string filename = "/Users/martines/Desktop/Physics/pythia8312/examples/ccbar_production_pt_10_35_GeV.hepmc";
-    ReaderAscii hepmc_file (filename);
+    ReaderAscii hepmc_file (hepmc3_filename);
     // stores the current event 
     GenEvent hepmc_event(HepMC3::Units::GEV, HepMC3::Units::MM);
 
@@ -51,7 +53,7 @@ int main () {
     event_analyzer.addObservable("invariantMass", &invariant_mass);
 
     // creating the CSV file
-    CSVWriter csvfile ("test.csv", 50);
+    CSVWriter csvfile ("/sampa/archive/caducka/jetsml/" + filename + ".csv", 50);
 
     // looping over all the events in the file
     int evt_number = 0; // simple counter to keep track on the number of evts
@@ -74,17 +76,27 @@ int main () {
         double q2 = event_analyzer.evaluateObservable("invariantMass", ParticleType::OutgoingHardProcessParticles);
         int initial_particle_pid = initial_particles.at(0)->abs_pid();
 
-        cout << "----------------------------" << endl;
-        cout << "Event number " << evt_number << endl;
-        cout << "Number of selected particles: " << final_state_particles.size() << endl;
-        cout << "PID of the initial particle: " << initial_particle_pid << endl;
-        cout << "Invariant mass of the process: " << q2 << endl;
-
+        if (evt_number % 1000 == 0)
+            cout << "Reached " << evt_number << " events" << endl;
+        
         // writing event in the file
         csvfile.writeEvent(q2, initial_particle_pid, final_state_particles);
 
         evt_number++;   
     }
-    
+}
+
+int main () {
+
+    vector<string> filenames = {
+        "bbbar_prod_40_60", "bbbar_prod_90_110", 
+        "ccbar_prod_20_30", "ccbar_prod_40_60", "ccbar_prod_90_110", 
+        "light_prod_20_30", "light_prod_40_60", "light_prod_90_110",
+        "soft_prod_20_30", "soft_prod_40_60", "soft_prod_90_110"   
+    };
+
+    for (string filename: filenames)
+        runCSVWriter(filename);        
+
     return 0;
 }
