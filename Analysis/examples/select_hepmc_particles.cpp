@@ -15,12 +15,12 @@ using namespace HepMC3;
 
 
 void runCSVWriter (string filename) {
-    cout << "analysing file " << filename << endl;
+    // cout << "analysing file " << filename << endl;
 
     // reading the HepMC3 file
     string hepmc3_filename = "/sampa/archive/caducka/jetsml/" + filename + ".hepmc";
     // my test
-    // string filename = "/Users/martines/Desktop/Physics/pythia8312/examples/ccbar_production_pt_10_35_GeV.hepmc";
+    // string hepmc3_filename = "/Users/martines/Desktop/Physics/pythia8312/examples/ccbar_production_pt_10_35_GeV.hepmc";
     ReaderAscii hepmc_file (hepmc3_filename);
     // stores the current event 
     GenEvent hepmc_event(HepMC3::Units::GEV, HepMC3::Units::MM);
@@ -54,6 +54,7 @@ void runCSVWriter (string filename) {
 
     // creating the CSV file
     CSVWriter csvfile ("/sampa/archive/caducka/jetsml/" + filename + ".csv", 50);
+    // CSVWriter csvfile ("/Users/martines/Desktop/Physics/pythia8312/examples/ccbar_production_pt_10_35_GeV.csv", 50);
 
     // looping over all the events in the file
     int evt_number = 0; // simple counter to keep track on the number of evts
@@ -97,6 +98,6 @@ int main () {
 
     for (string filename: filenames)
         runCSVWriter(filename);        
-
+    
     return 0;
 }

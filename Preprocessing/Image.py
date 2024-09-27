@@ -34,6 +34,8 @@ class Image:
         self._image[:] = 0
         # delegates the task to the ImageBuilder instance, that knows how to handle the information
         self._image_builder.build_image(image_data=image_data, image=self)
+        # returns a copy of the constructed image
+        return np.copy(self._image)
 
     def update_image(self, eta: float, phi: float, colors: np.array):
         """Updates the bin containning the values of eta and phi with the respective color intensitities"""
@@ -46,6 +48,10 @@ class Image:
         # updating the image only if it's within the allowed range
         if 0 <= eta_bin < self._nbins_eta and 0 <= phi_bin < self._nbins_phi:
             self._image[eta_bin][phi_bin] += colors
+
+    def rescale_image(self, factor):
+        """rescale all the entries by factor."""
+        self._image *= factor
 
 
 class ImageBuilder(ABC):
@@ -78,12 +84,41 @@ class SingleImageBuilder(ImageBuilder):
     pid_charges_map = ChargesMap({211: 1, 11: -1, 13: -1, 321: 1, 2212: 1})
 
     def build_image(self, image_data, image: Image):
-        # updates the image for each jet or process that belongs to the event
-        for index_const in range(2, len(image_data)):
+        # info about the particle with the greates pT
+        # assumes that the particles are sorted by pT, from the biggest to the lowest (this is the case for the files)
+        pt_ref, eta_ref, phi_ref = image_data[2: 5]
+        # updates the image with each particle info that belongs to the event
+        for index_const in range(2, len(image_data), 4):
             # particle information
             pt, eta, phi, pid = image_data[index_const: index_const + 4]
             # array with the color intensities
-            color_intensities = np.array([pt, self.pid_charges_map[pid]])
+            color_intensities = np.array([pt/pt_ref, self.pid_charges_map[pid]])
             # updating the image
-            image.update_image(eta=eta, phi=phi, colors=np.array(color_intensities))
+            image.update_image(eta=eta - eta_ref, phi=self.delta_phi(phi, phi_ref), colors=color_intensities)
 
+    @staticmethod
+    def delta_phi(phi1, phi2):
+        """Evaluates the difference among the azimuthal angles"""
+        dphi = phi1 - phi2
+        while dphi >= np.pi:
+            dphi -= 2 * np.pi
+        while dphi < -np.pi:
+            dphi += 2 * np.pi
+        return dphi
+
+
+class AverageImageBuilder(ImageBuilder):
+    """Takes the average over the images"""
+
+    def __init__(self, image_builder: ImageBuilder):
+        # stores the builder that must be used over the instances
+        self._image_builder = image_builder
+
+    def build_image(self, image_data, image: Image):
+        # total number of instances
+        number_evts = image_data.shape[0]
+        # iterates over all the events
+        for event in image_data:
+            self._image_builder.build_image(event, image)
+        # normalize the entries by the total number of instances
+        image.rescale_image(1/number_evts)
