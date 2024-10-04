@@ -18,11 +18,27 @@ const std::vector<HepMC3::ConstGenParticlePtr>& EventAnalyzer::getParticles (Par
     return empty;
 }
 
+double EventAnalyzer::evaluateObservable (std::string observable_name, ParticleType particle_type) const  {
+    /// checking if the element is in the map
+    auto it_part_type = selected_particles.find(particle_type);
+    auto it_obs_name = observables.find(observable_name);
+    if (it_part_type == selected_particles.end() || it_obs_name == observables.end()) 
+        return -1;
+    /// returns the value of the observable
+    return observables.at(observable_name)->evaluateObservable(selected_particles.at(particle_type));
+}
+
+
 void EventAnalyzer::resetVectors () {
     /// clears all vectors
     for (auto it_part_type = selected_particles.begin(); it_part_type != selected_particles.end(); it_part_type++)
         it_part_type->second.clear();
 }
+
+
+bool compareParticles (HepMC3::ConstGenParticlePtr part1, HepMC3::ConstGenParticlePtr part2) {
+    return part1->momentum().pt() > part2->momentum().pt();
+};
 
 void EventAnalyzer::analyseEvent (const HepMC3::GenEvent& hepmc3_event) {
     this->resetVectors();
@@ -38,4 +54,8 @@ void EventAnalyzer::analyseEvent (const HepMC3::GenEvent& hepmc3_event) {
             }
         }
     }
+    // order the vectors by pT
+    auto partIterator = selected_particles.begin();
+    for(; partIterator != selected_particles.end(); partIterator++)
+        std::sort(partIterator->second.begin(), partIterator->second.end(), compareParticles);
 }

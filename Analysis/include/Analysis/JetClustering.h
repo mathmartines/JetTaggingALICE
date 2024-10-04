@@ -59,6 +59,4 @@ class JetClustering {
         std::vector<fastjet::PseudoJet> convertParticlesToPseudoJets(const std::vector<HepMC3::ConstGenParticlePtr> &particles) const;
 };
 
-
-
 #endif
