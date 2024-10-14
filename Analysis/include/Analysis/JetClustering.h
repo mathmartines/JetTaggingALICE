@@ -23,14 +23,13 @@ class HepMC3Info: public fastjet::PseudoJet::UserInfoBase {
 
     public:
         /// @brief - we can store the pid number and the respective eletric charge from the particle 
-        HepMC3Info (const int pid, const int charge): _pid(pid), _charge(charge) {};
+        HepMC3Info (const int pid): _pid(pid){};
         
         /// access to the pid number and eletric charge
         const int pid() const {return _pid;};
-        const int charge() const {return _charge;};
 
     private:
-        const int _pid, _charge;
+        const int _pid;
 };
 
 

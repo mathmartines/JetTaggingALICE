@@ -63,7 +63,7 @@ void runCSVWriter (string filename) {
         hepmc_file.read_event(hepmc_event);
         
         // If reading failed - exit loop
-        if(hepmc_file.failed() ) break;
+        if(hepmc_file.failed()) break;
 
         // selecting the particles
         event_analyzer.analyseEvent(hepmc_event);

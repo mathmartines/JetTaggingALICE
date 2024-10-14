@@ -11,7 +11,7 @@ std::vector<fastjet::PseudoJet> JetClustering::convertParticlesToPseudoJets(cons
         /// updating the jet momentum
         final_pseudo_jets[i].reset_momentum(momentum.px(), momentum.py(), momentum.pz(), momentum.e());
         /// including the hepmc information as user info
-        final_pseudo_jets[i].set_user_info(new HepMC3Info(particles[i]->pid(), -1));
+        final_pseudo_jets[i].set_user_info(new HepMC3Info(particles[i]->pid()));
     }
 
     return final_pseudo_jets;
