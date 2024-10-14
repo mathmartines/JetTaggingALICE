@@ -78,7 +78,7 @@ class ChargedParticlesSelector: public ParticleSelector {
         /// we can only accept particles with PIDs corresponding to charged particles
         bool selectParticle(HepMC3::ConstGenParticlePtr particle) const override;
 
-        /// @brief - adds a new pid to the list
+        /// @brief - adds a new pid to the list 
         void addPID(int pid) {_charged_part_pids.insert(pid);};
 
     private:

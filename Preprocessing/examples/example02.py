@@ -29,7 +29,7 @@ if __name__ == "__main__":
     plt.title(r'Average Pt - c cbar production')
     plt.savefig('avg_pt_ccbar.png', bbox_inches="tight", dpi=300)
 
-    plt.imshow(image_grid[:, :, 1], cmap="bwr", extent=(-np.pi, np.pi, -4, 4), vmin=-0.1, vmax=0.1)
+    plt.imshow(image_grid[:, :, 1], cmap="bwr", extent=(-np.pi, np.pi, -4, 4), vmin=-0.01, vmax=0.01)
     plt.colorbar(label='Charge')
     plt.xlabel(r'$\phi^{rel}$')
     plt.ylabel(r'$\eta^{rel}$')
