@@ -20,7 +20,7 @@ void SignalParticlesSearcher::searchParticles(HepMC3::ConstGenParticlePtr incomm
         return;
     }
     // only go to the vertex if we did not look at it before
-    if (_vertices.find(incomming_particle->end_vertex()) == _vertices.end()) {
+    if (incomming_particle->status() != 1 && _vertices.find(incomming_particle->end_vertex()) == _vertices.end()) {
         _vertices.insert(incomming_particle->end_vertex());
         // look at every outgoing particle from the vertex
         for (HepMC3::ConstGenParticlePtr outgoing_particle: incomming_particle->end_vertex()->particles_out())

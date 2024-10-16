@@ -5,6 +5,7 @@
 #include "Analysis/Observable.h"
 #include "Analysis/EventAnalyzer.h"
 #include "Analysis/CSVWriter.h"
+#include "Analysis/SignalParticlesSearcher.h"
 #include "HepMC3/Reader.h"
 #include "HepMC3/ReaderAscii.h"
 #include "HepMC3/GenEvent.h"
@@ -15,7 +16,7 @@ using namespace HepMC3;
 
 
 void runCSVWriter (string filename) {
-    // cout << "analysing file " << filename << endl;
+    cout << "analysing file " << filename << endl;
 
     // reading the HepMC3 file
     string hepmc3_filename = "/sampa/archive/caducka/jetsml/" + filename + ".hepmc";
@@ -52,8 +53,11 @@ void runCSVWriter (string filename) {
     // adding the observables
     event_analyzer.addObservable("invariantMass", &invariant_mass);
 
+    // creating the final particles searcher
+    SignalParticlesSearcher signal_particle_searcher (&hepmc_particle_selector);
+
     // creating the CSV file
-    CSVWriter csvfile ("/sampa/archive/caducka/jetsml/" + filename + ".csv", 50);
+    CSVWriter csvfile ("/sampa/archive/caducka/jetsml/" + filename + "_from_hard_process.csv", 50);
     // CSVWriter csvfile ("/Users/martines/Desktop/Physics/pythia8312/examples/ccbar_production_pt_10_35_GeV.csv", 50);
 
     // looping over all the events in the file
@@ -72,16 +76,20 @@ void runCSVWriter (string filename) {
         const vector<ConstGenParticlePtr>& final_state_particles = event_analyzer.getParticles(ParticleType::FinalParticles);
         // initial state particles
         const vector<ConstGenParticlePtr>& initial_particles = event_analyzer.getParticles(ParticleType::InitialParticles);
-        
+        // particles from the hard process
+        const vector<ConstGenParticlePtr>& hard_proc_particles = event_analyzer.getParticles(ParticleType::OutgoingHardProcessParticles);
+        // final particles stable particles from the hard process
+        const vector<ConstGenParticlePtr>& final_from_hard_process = signal_particle_searcher.selectParticles(hard_proc_particles);
+
         // get the energy and initial particle pid
         double q2 = event_analyzer.evaluateObservable("invariantMass", ParticleType::OutgoingHardProcessParticles);
         int initial_particle_pid = initial_particles.at(0)->abs_pid();
 
-        if (evt_number % 1000 == 0)
+        if (evt_number % 10000 == 0)
             cout << "Reached " << evt_number << " events" << endl;
         
         // writing event in the file
-        csvfile.writeEvent(q2, initial_particle_pid, final_state_particles);
+        csvfile.writeEvent(q2, initial_particle_pid, final_from_hard_process);
 
         evt_number++;   
     }

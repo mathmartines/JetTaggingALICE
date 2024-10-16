@@ -14,7 +14,7 @@ DEPS = $(patsubst %, $(IDIR)/%.h, $(_DEPS))
 OBJ = $(patsubst %, $(ODIR)/%.o, $(_DEPS))
 
 # for analysis with only hepmc3
-_DEPSHEPMC = ParticleSelector Observable CSVWriter EventAnalyzer 
+_DEPSHEPMC = ParticleSelector Observable SignalParticlesSearcher CSVWriter EventAnalyzer 
 DEPSHEPMC = $(patsubst %, $(IDIR)/%.h, $(_DEPSHEPMC)) 
 OBJHEPMC = $(patsubst %, $(ODIR)/%.o, $(_DEPSHEPMC))
 
