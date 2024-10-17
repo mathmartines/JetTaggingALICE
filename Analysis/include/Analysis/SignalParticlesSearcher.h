@@ -8,6 +8,7 @@
 #include "HepMC3/GenParticle.h"
 #include "HepMC3/GenVertex.h"
 #include "Analysis/ParticleSelector.h"
+#include "Analysis/EventAnalyzer.h"
 
 /// @brief - searches for the final state particles originated from the hard process
 class SignalParticlesSearcher {

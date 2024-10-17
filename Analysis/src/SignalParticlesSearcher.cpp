@@ -7,6 +7,8 @@ const std::vector<HepMC3::ConstGenParticlePtr>& SignalParticlesSearcher::selectP
     /// performing the search for each particle
     for (HepMC3::ConstGenParticlePtr particle: hard_particles)
         this->searchParticles(particle);
+    /// sort the particles by pT
+    std::sort(_final_particles.begin(), _final_particles.end(), compareParticles);
     return _final_particles;
 }
 

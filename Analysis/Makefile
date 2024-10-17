@@ -9,12 +9,12 @@ IDIR = include/Analysis
 ODIR = lib
 
 # for analysis with hepmc3 and fastjet
-_DEPS = ParticleSelector Observable SignalParticlesSearcher JetClustering EventAnalyzer
+_DEPS = ParticleSelector Observable JetClustering EventAnalyzer SignalParticlesSearcher
 DEPS = $(patsubst %, $(IDIR)/%.h, $(_DEPS)) 
 OBJ = $(patsubst %, $(ODIR)/%.o, $(_DEPS))
 
 # for analysis with only hepmc3
-_DEPSHEPMC = ParticleSelector Observable SignalParticlesSearcher CSVWriter EventAnalyzer 
+_DEPSHEPMC = ParticleSelector Observable CSVWriter EventAnalyzer SignalParticlesSearcher
 DEPSHEPMC = $(patsubst %, $(IDIR)/%.h, $(_DEPSHEPMC)) 
 OBJHEPMC = $(patsubst %, $(ODIR)/%.o, $(_DEPSHEPMC))
 

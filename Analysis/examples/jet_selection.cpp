@@ -84,13 +84,13 @@ int main () {
         cout << "q^2 = " << q2 << endl;
         cout << "initial PID: " << initial_particle_pid << endl;
         // cout << "Jets properties:" << endl;
-        // for(auto jet: jets) {
-        //     cout << "Jet pT = " << jet.pt() << ", eta = " << jet.eta() << endl;
-        //     cout << "Jet constituents:" << endl;
-        //     for (auto constituent: jet.constituents())
-        //         cout << "-- PID: " << constituent.user_info<HepMC3Info>().pid() << " pT: " << constituent.pt() << endl;
-        //     cout << "--------------------------------------" << endl;
-        // }
+        for(auto jet: final_particles_signal) {
+            cout << "Jet pT = " << jet->momentum().pt() << endl;
+            // cout << "Jet constituents:" << endl;
+            // for (auto constituent: jet.constituents())
+                // cout << "-- PID: " << constituent.user_info<HepMC3Info>().pid() << " pT: " << constituent.pt() << endl;
+            // cout << "--------------------------------------" << endl;
+        }
         cout << "+++++++++++++++++++++++++++++++++++++++++++" << endl;
     }
     
